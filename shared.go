@@ -14,37 +14,41 @@ func (s Span) Len() int {
 }
 
 type Match[T Text] struct {
-	Content  []byte
-	Span     Span
+	Content T
+	Span    Span
+	Subs    Subs[T]
+}
+
+type Subs[T Text] struct {
+	content  T
+	shift    int
 	rawSpans []int
 }
 
-func (m Match[T]) Sub(i int) SubMatch[T] {
-	shift := m.Span.Start
-	start := m.rawSpans[i*2]
-	end := m.rawSpans[i*2+1]
-	return SubMatch[T]{
-		Content: []byte{},
+func (s Subs[T]) At(i int) Sub[T] {
+	start := s.rawSpans[i*2]
+	end := s.rawSpans[i*2+1]
+	return Sub[T]{
+		Content: s.content[start:end],
 		Span: Span{
-			Start: shift + start,
-			End:   shift + end,
+			Start: s.shift + start,
+			End:   s.shift + end,
 		},
 	}
 }
 
-func (m Match[T]) Subs() []SubMatch[T] {
-	spans := m.rawSpans
-	shift := m.Span.Start
+func (s Subs[T]) Slice() []Sub[T] {
+	spans := s.rawSpans
 	nSubs := len(spans)/2 - 1
-	subs := make([]SubMatch[T], 0, nSubs)
+	subs := make([]Sub[T], 0, nSubs)
 	for i := 2; i < len(spans); i += 2 {
 		subStart := spans[i]
 		subEnd := spans[i+1]
-		sub := SubMatch[T]{
-			Content: []byte{},
+		sub := Sub[T]{
+			Content: s.content[subStart:subEnd],
 			Span: Span{
-				Start: shift + subStart,
-				End:   shift + subEnd,
+				Start: s.shift + subStart,
+				End:   s.shift + subEnd,
 			},
 		}
 		subs = append(subs, sub)
@@ -52,7 +56,7 @@ func (m Match[T]) Subs() []SubMatch[T] {
 	return subs
 }
 
-type SubMatch[T Text] struct {
-	Content []byte
+type Sub[T Text] struct {
+	Content T
 	Span    Span
 }

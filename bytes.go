@@ -6,8 +6,9 @@ import (
 )
 
 type (
-	BytesMatch    = Match[[]byte]
-	BytesSubMatch = SubMatch[[]byte]
+	BMatch = Match[[]byte]
+	BSub   = Sub[[]byte]
+	BSubs  = Subs[[]byte]
 )
 
 type Bytes struct {
@@ -15,8 +16,8 @@ type Bytes struct {
 	src []byte
 }
 
-func (b Bytes) Find() iter.Seq[BytesMatch] {
-	return func(yield func(BytesMatch) bool) {
+func (b Bytes) Find() iter.Seq[BMatch] {
+	return func(yield func(BMatch) bool) {
 		shift := 0
 		for {
 			subSrc := b.src[shift:]
@@ -26,13 +27,18 @@ func (b Bytes) Find() iter.Seq[BytesMatch] {
 			}
 			spanStart := spans[0]
 			spanEnd := spans[1]
-			match := BytesMatch{
-				Content: subSrc[spanStart:spanEnd],
+			matchSrc := subSrc[spanStart:spanEnd]
+			match := BMatch{
+				Content: matchSrc,
 				Span: Span{
 					Start: shift + spanStart,
 					End:   shift + spanEnd,
 				},
-				rawSpans: spans,
+				Subs: BSubs{
+					shift:    shift,
+					content:  matchSrc,
+					rawSpans: spans,
+				},
 			}
 			more := yield(match)
 			if !more {
