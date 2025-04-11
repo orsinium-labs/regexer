@@ -24,26 +24,6 @@ func (b Bytes) Find() iter.Seq[BytesMatch] {
 			if spans == nil {
 				return
 			}
-
-			nSubs := len(spans)/2 - 1
-			subs := make([]BytesSubMatch, 0, nSubs)
-			for i := 2; i < len(spans); i += 2 {
-				subStart := spans[i]
-				subEnd := spans[i+1]
-				sub := BytesSubMatch{
-					Content: []byte{},
-					Abs: Span{
-						Start: shift + subStart,
-						End:   shift + subEnd,
-					},
-					Rel: Span{
-						Start: subStart,
-						End:   subEnd,
-					},
-				}
-				subs = append(subs, sub)
-			}
-
 			spanStart := spans[0]
 			spanEnd := spans[1]
 			match := BytesMatch{
@@ -52,7 +32,7 @@ func (b Bytes) Find() iter.Seq[BytesMatch] {
 					Start: shift + spanStart,
 					End:   shift + spanEnd,
 				},
-				Sub: subs,
+				rawSpans: spans,
 			}
 			more := yield(match)
 			if !more {
