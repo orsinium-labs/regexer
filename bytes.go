@@ -48,3 +48,7 @@ func (b Bytes) Find() iter.Seq[BMatch] {
 		}
 	}
 }
+
+func (b Bytes) Match() bool {
+	return b.rex.Match(b.src)
+}
