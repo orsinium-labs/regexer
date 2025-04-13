@@ -5,7 +5,6 @@ import (
 	"io"
 	"iter"
 	"regexp"
-	"slices"
 	"unicode/utf8"
 )
 
@@ -111,8 +110,9 @@ func (r RReplacement) ReplaceFunc(f func([]rune) []rune) {
 func runes2bytes(runes []rune) []byte {
 	bytes := make([]byte, 0, len(runes))
 	for _, r := range runes {
-		bytes = slices.Grow(bytes, 4)
-		utf8.EncodeRune(bytes, r)
+		bytes = append(bytes, 0, 0, 0, 0)
+		n := utf8.EncodeRune(bytes[len(bytes)-4:], r)
+		bytes = bytes[:len(bytes)-4+n]
 	}
 	return bytes
 }
