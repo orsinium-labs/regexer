@@ -6,6 +6,10 @@ type Text interface {
 	~string | ~[]byte
 }
 
+type RText interface {
+	~string | ~[]byte | ~[]rune
+}
+
 type Span struct {
 	Start int
 	End   int
@@ -87,7 +91,7 @@ func (s Subs[T]) Iter() iter.Seq[Sub[T]] {
 	}
 }
 
-type Sub[T Text] struct {
+type Sub[T RText] struct {
 	Content T
 	Span    Span
 }

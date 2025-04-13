@@ -78,7 +78,4 @@ func (s RSubs) Iter() iter.Seq[RSub] {
 	}
 }
 
-type RSub struct {
-	Content []rune
-	Span    Span
-}
+type RSub = Sub[[]rune]
