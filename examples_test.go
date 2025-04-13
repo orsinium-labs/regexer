@@ -3,6 +3,7 @@ package regexer_test
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/orsinium-labs/regexer"
 )
@@ -31,6 +32,45 @@ func ExampleString_Contains() {
 		fmt.Println("the string contains a regexp match")
 	}
 	//Output: the string contains a regexp match
+}
+
+func ExampleString_Replace() {
+	rex := regexer.New(`(is|the)`)
+	input := "number 42 is the answer"
+	var result string
+	matches := rex.String(input).Replace(&result)
+	for match := range matches {
+		newVal := strings.ToUpper(match.Content)
+		match.ReplaceLiteral(newVal)
+	}
+	fmt.Println(string(result))
+	//Output: number 42 IS THE answer
+}
+
+func ExampleSReplacement_ReplaceLiteral() {
+	rex := regexer.New(`(is|the)`)
+	input := "number 42 is the answer"
+	var result string
+	matches := rex.String(input).Replace(&result)
+	for match := range matches {
+		newVal := strings.ToUpper(match.Content)
+		match.ReplaceLiteral(newVal)
+	}
+	fmt.Println(string(result))
+	//Output: number 42 IS THE answer
+}
+
+func ExampleSReplacement_ReplaceTemplate() {
+	rex := regexer.New(`(is|the)`)
+	input := "number 42 is the answer"
+	var result string
+	matches := rex.String(input).Replace(&result)
+	for match := range matches {
+		template := string(`[$1]`)
+		match.ReplaceTemplate(template)
+	}
+	fmt.Println(string(result))
+	//Output: number 42 [is] [the] answer
 }
 
 func ExampleBytes_Find() {
