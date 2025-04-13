@@ -41,7 +41,7 @@ func ExampleString_Replace() {
 		newVal := strings.ToUpper(match.Content)
 		match.ReplaceLiteral(newVal)
 	}
-	fmt.Println(string(result))
+	fmt.Println(result)
 	//Output: number 42 IS THE answer
 }
 
