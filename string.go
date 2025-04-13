@@ -88,8 +88,8 @@ func (r SReplacement) ReplaceLiteral(val string) {
 }
 
 func (r SReplacement) ReplaceTemplate(val string) {
-	// TODO: avoid allocations on bytes<->string conversion by using unsafe.
-	suffix := r.rex.Expand(nil, []byte(val), []byte(r.src), r.Subs.rawSpans)
+	suffix := r.rex.ExpandString(nil, val, r.src, r.Subs.rawSpans)
+	// TODO: avoid allocations on bytes->string conversion by using unsafe.
 	r.result.WriteString(string(suffix))
 }
 
