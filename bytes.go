@@ -49,6 +49,45 @@ func (b Bytes) Find() iter.Seq[BMatch] {
 	}
 }
 
+func (b Bytes) Replace(res *[]byte) iter.Seq[BReplacement] {
+	return func(yield func(BReplacement) bool) {
+		prevEnd := 0
+		for match := range b.Find() {
+			*res = append(*res, b.src[prevEnd:match.Span.Start]...)
+			ok := yield(BReplacement{
+				Match:  match,
+				rex:    b.rex,
+				src:    b.src[match.Span.Start:],
+				result: res,
+			})
+			if !ok {
+				return
+			}
+			prevEnd = match.Span.End
+		}
+		*res = append(*res, b.src[prevEnd:]...)
+	}
+}
+
 func (b Bytes) Match() bool {
 	return b.rex.Match(b.src)
+}
+
+type BReplacement struct {
+	Match[[]byte]
+	rex    *regexp.Regexp
+	src    []byte
+	result *[]byte
+}
+
+func (r BReplacement) Literal(val []byte) {
+	*r.result = append(*r.result, val...)
+}
+
+func (r BReplacement) Template(val []byte) {
+	*r.result = r.rex.Expand(*r.result, val, r.src, r.Subs.rawSpans)
+}
+
+func (r BReplacement) Func(f func([]byte) []byte) {
+	*r.result = append(*r.result, f(r.Match.Content)...)
 }

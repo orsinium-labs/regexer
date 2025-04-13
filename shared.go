@@ -3,7 +3,7 @@ package regexer
 import "iter"
 
 type Text interface {
-	string | []byte
+	~string | ~[]byte
 }
 
 type Span struct {
