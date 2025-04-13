@@ -1,9 +1,11 @@
 package regexer
 
 import (
+	"bytes"
 	"io"
 	"iter"
 	"regexp"
+	"slices"
 	"unicode/utf8"
 )
 
@@ -60,46 +62,57 @@ func (b Runes) Find() iter.Seq[RMatch] {
 	}
 }
 
-// func (b Runes) Replace(res *io.RuneReader) iter.Seq[RReplacement] {
-// 	return func(yield func(RReplacement) bool) {
-// 		prevEnd := 0
-// 		for match := range b.Find() {
-// 			*res = append(*res, b.src[prevEnd:match.Span.Start]...)
-// 			ok := yield(RReplacement{
-// 				Match:  match,
-// 				rex:    b.rex,
-// 				src:    b.src[prevEnd:],
-// 				result: res,
-// 			})
-// 			if !ok {
-// 				return
-// 			}
-// 			prevEnd = match.Span.End
-// 		}
-// 		*res = append(*res, b.src[prevEnd:]...)
-// 	}
-// }
+func (b Runes) Replace(res *[]rune) iter.Seq[RReplacement] {
+	return func(yield func(RReplacement) bool) {
+		prevEnd := 0
+		for match := range b.Find() {
+			*res = append(*res, b.src[prevEnd:match.Span.Start]...)
+			ok := yield(RReplacement{
+				RMatch: match,
+				rex:    b.rex,
+				src:    b.src[prevEnd:],
+				result: res,
+			})
+			if !ok {
+				return
+			}
+			prevEnd = match.Span.End
+		}
+		*res = append(*res, b.src[prevEnd:]...)
+	}
+}
 
 func (b Runes) Contains() bool {
 	reader := runeReader{inner: b.src}
 	return b.rex.MatchReader(&reader)
 }
 
-// type RReplacement struct {
-// 	RMatch
-// 	rex    *regexp.Regexp
-// 	src    io.RuneReader
-// 	result *io.RuneReader
-// }
+type RReplacement struct {
+	RMatch
+	rex    *regexp.Regexp
+	src    []rune
+	result *[]rune
+}
 
-// func (r RReplacement) ReplaceLiteral(val io.RuneReader) {
-// 	*r.result = append(*r.result, val...)
-// }
+func (r RReplacement) ReplaceLiteral(val []rune) {
+	*r.result = append(*r.result, val...)
+}
 
-// func (r RReplacement) ReplaceTemplate(val io.RuneReader) {
-// 	*r.result = r.rex.Expand(*r.result, val, r.src, r.Subs.rawSpans)
-// }
+func (r RReplacement) ReplaceTemplate(val []rune) {
+	// TODO: decrease the number of type conversions.
+	suffix := r.rex.Expand(nil, runes2bytes(val), runes2bytes(r.src), r.Subs.rawSpans)
+	*r.result = append(*r.result, bytes.Runes(suffix)...)
+}
 
-// func (r RReplacement) ReplaceFunc(f func(io.RuneReader) io.RuneReader) {
-// 	*r.result = append(*r.result, f(r.Match.Content)...)
-// }
+func (r RReplacement) ReplaceFunc(f func([]rune) []rune) {
+	*r.result = append(*r.result, f(r.RMatch.Content)...)
+}
+
+func runes2bytes(runes []rune) []byte {
+	bytes := make([]byte, 0, len(runes))
+	for _, r := range runes {
+		bytes = slices.Grow(bytes, 4)
+		utf8.EncodeRune(bytes, r)
+	}
+	return bytes
+}
