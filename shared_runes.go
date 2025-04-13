@@ -4,7 +4,7 @@ import "iter"
 
 // The same as [Match] but for runes.
 //
-// Because the compiler can't infer the core type of [Text] if we extend it
+// Because the compiler can't infer the core type of [text] if we extend it
 // with a slice of runes.
 type RMatch struct {
 	// The full match text.

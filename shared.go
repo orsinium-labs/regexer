@@ -2,11 +2,11 @@ package regexer
 
 import "iter"
 
-type Text interface {
+type text interface {
 	~string | ~[]byte
 }
 
-type RText interface {
+type rText interface {
 	~string | ~[]byte | ~[]rune
 }
 
@@ -19,7 +19,7 @@ func (s Span) Len() int {
 	return s.End - s.Start
 }
 
-type Match[T Text] struct {
+type Match[T text] struct {
 	// The full match text.
 	Content T
 	// The range of the match in the original text.
@@ -29,7 +29,7 @@ type Match[T Text] struct {
 }
 
 // Matches for sub-patterns.
-type Subs[T Text] struct {
+type Subs[T text] struct {
 	content  T
 	shift    int
 	rawSpans []int
@@ -91,7 +91,7 @@ func (s Subs[T]) Iter() iter.Seq[Sub[T]] {
 	}
 }
 
-type Sub[T RText] struct {
+type Sub[T rText] struct {
 	Content T
 	Span    Span
 }
