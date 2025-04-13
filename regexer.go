@@ -21,3 +21,7 @@ func (r Regex) Bytes(src []byte) Bytes {
 func (r Regex) String(src string) String {
 	return String{rex: r.rex, src: src}
 }
+
+func (r Regex) Runes(src []rune) Runes {
+	return Runes{rex: r.rex, src: src}
+}
