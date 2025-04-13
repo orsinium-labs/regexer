@@ -1,6 +1,7 @@
 package regexer_test
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/orsinium-labs/regexer"
@@ -56,4 +57,43 @@ func ExampleBytes_Contains() {
 		fmt.Println("the byte slice contains a regexp match")
 	}
 	//Output: the byte slice contains a regexp match
+}
+
+func ExampleBytes_Replace() {
+	rex := regexer.New(`(is|the)`)
+	input := []byte("number 42 is the answer")
+	var result []byte
+	matches := rex.Bytes(input).Replace(&result)
+	for match := range matches {
+		newVal := bytes.ToUpper(match.Content)
+		match.ReplaceLiteral(newVal)
+	}
+	fmt.Println(string(result))
+	//Output: number 42 IS THE answer
+}
+
+func ExampleBReplacement_ReplaceLiteral() {
+	rex := regexer.New(`(is|the)`)
+	input := []byte("number 42 is the answer")
+	var result []byte
+	matches := rex.Bytes(input).Replace(&result)
+	for match := range matches {
+		newVal := bytes.ToUpper(match.Content)
+		match.ReplaceLiteral(newVal)
+	}
+	fmt.Println(string(result))
+	//Output: number 42 IS THE answer
+}
+
+func ExampleBReplacement_ReplaceTemplate() {
+	rex := regexer.New(`(is|the)`)
+	input := []byte("number 42 is the answer")
+	var result []byte
+	matches := rex.Bytes(input).Replace(&result)
+	for match := range matches {
+		template := []byte(`[$1]`)
+		match.ReplaceTemplate(template)
+	}
+	fmt.Println(string(result))
+	//Output: number 42 [is] [the] answer
 }

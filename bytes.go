@@ -57,7 +57,7 @@ func (b Bytes) Replace(res *[]byte) iter.Seq[BReplacement] {
 			ok := yield(BReplacement{
 				Match:  match,
 				rex:    b.rex,
-				src:    b.src[match.Span.Start:],
+				src:    b.src[prevEnd:],
 				result: res,
 			})
 			if !ok {
@@ -80,14 +80,14 @@ type BReplacement struct {
 	result *[]byte
 }
 
-func (r BReplacement) Literal(val []byte) {
+func (r BReplacement) ReplaceLiteral(val []byte) {
 	*r.result = append(*r.result, val...)
 }
 
-func (r BReplacement) Template(val []byte) {
+func (r BReplacement) ReplaceTemplate(val []byte) {
 	*r.result = r.rex.Expand(*r.result, val, r.src, r.Subs.rawSpans)
 }
 
-func (r BReplacement) Func(f func([]byte) []byte) {
+func (r BReplacement) ReplaceFunc(f func([]byte) []byte) {
 	*r.result = append(*r.result, f(r.Match.Content)...)
 }
