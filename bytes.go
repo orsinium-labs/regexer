@@ -27,16 +27,15 @@ func (b Bytes) Find() iter.Seq[BMatch] {
 			}
 			spanStart := spans[0]
 			spanEnd := spans[1]
-			matchSrc := subSrc[spanStart:spanEnd]
 			match := BMatch{
-				Content: matchSrc,
+				Content: subSrc[spanStart:spanEnd],
 				Span: Span{
 					Start: shift + spanStart,
 					End:   shift + spanEnd,
 				},
 				Subs: BSubs{
 					shift:    shift,
-					content:  matchSrc,
+					content:  subSrc,
 					rawSpans: spans,
 				},
 			}

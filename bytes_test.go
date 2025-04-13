@@ -12,7 +12,6 @@ func ExampleBytes_Find() {
 	input := []byte("never gonna give you up")
 	matches := rex.Bytes(input).Find()
 	for match := range matches {
-		_ = match
 		fmt.Println(match.Span.Start, string(match.Content))
 	}
 	//Output:
@@ -70,4 +69,18 @@ func ExampleBReplacement_ReplaceTemplate() {
 	}
 	fmt.Println(string(result))
 	//Output: number 42 [is] [the] answer
+}
+
+func ExampleBReplacement_ReplaceFunc() {
+	rex := regexer.New(`[a-z]+`)
+	input := []byte("number 42 is the answer")
+	var result []byte
+	matches := rex.Bytes(input).Replace(&result)
+	for match := range matches {
+		match.ReplaceFunc(func(b []byte) []byte {
+			return append(bytes.ToUpper(b[:1]), b[1:]...)
+		})
+	}
+	fmt.Println(string(result))
+	//Output: Number 42 Is The Answer
 }

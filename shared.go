@@ -55,7 +55,7 @@ func (s Subs[T]) Slice() []Sub[T] {
 	spans := s.rawSpans
 	nSubs := len(spans)/2 - 1
 	subs := make([]Sub[T], 0, nSubs)
-	for i := 2; i < len(spans); i += 2 {
+	for i := 0; i < len(spans); i += 2 {
 		subStart := spans[i]
 		subEnd := spans[i+1]
 		sub := Sub[T]{
@@ -73,7 +73,7 @@ func (s Subs[T]) Slice() []Sub[T] {
 func (s Subs[T]) Iter() iter.Seq[Sub[T]] {
 	return func(yield func(Sub[T]) bool) {
 		spans := s.rawSpans
-		for i := 2; i < len(spans); i += 2 {
+		for i := 0; i < len(spans); i += 2 {
 			subStart := spans[i]
 			subEnd := spans[i+1]
 			sub := Sub[T]{

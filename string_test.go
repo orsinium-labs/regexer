@@ -12,7 +12,6 @@ func ExampleString_Find() {
 	input := "never gonna give you up"
 	matches := rex.String(input).Find()
 	for match := range matches {
-		_ = match
 		fmt.Println(match.Span.Start, match.Content)
 	}
 	//Output:

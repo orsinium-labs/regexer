@@ -28,16 +28,15 @@ func (b String) Find() iter.Seq[SMatch] {
 			}
 			spanStart := spans[0]
 			spanEnd := spans[1]
-			matchSrc := subSrc[spanStart:spanEnd]
 			match := SMatch{
-				Content: matchSrc,
+				Content: subSrc[spanStart:spanEnd],
 				Span: Span{
 					Start: shift + spanStart,
 					End:   shift + spanEnd,
 				},
 				Subs: SSubs{
 					shift:    shift,
-					content:  matchSrc,
+					content:  subSrc,
 					rawSpans: spans,
 				},
 			}
