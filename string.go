@@ -44,11 +44,11 @@ func (b String) Find() iter.Seq[SMatch] {
 			if !more {
 				return
 			}
-			shift += spanStart
+			shift += spanEnd
 		}
 	}
 }
 
-func (b String) Match() bool {
+func (b String) Contains() bool {
 	return b.rex.MatchString(b.src)
 }

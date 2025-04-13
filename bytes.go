@@ -44,7 +44,7 @@ func (b Bytes) Find() iter.Seq[BMatch] {
 			if !more {
 				return
 			}
-			shift += spanStart
+			shift += spanEnd
 		}
 	}
 }
@@ -69,7 +69,7 @@ func (b Bytes) Replace(res *[]byte) iter.Seq[BReplacement] {
 	}
 }
 
-func (b Bytes) Match() bool {
+func (b Bytes) Contains() bool {
 	return b.rex.Match(b.src)
 }
 
