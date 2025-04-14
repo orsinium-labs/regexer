@@ -2,7 +2,7 @@
 
 [ [📄 docs](https://pkg.go.dev/github.com/orsinium-labs/regexer) ] [ [🐙 github](https://github.com/orsinium-labs/regexer) ]
 
-Go package with more powerful, flexible, and safe API for regular expressions.
+Go package with more powerful, flexible, and safe API for regular expressions. The main idea is to use the Go 1.24+ iterators to make finding/replacing submatches flexible, low-memory, and stoppable.
 
 Features:
 
@@ -11,6 +11,7 @@ Features:
 * Supports strings, bytes, and runes as input.
 * The same generic API for all inputs.
 * Everything possible with stdin regexp: find matches, find submatches, replace, replace with a template.
+* And much more, like the ability to replace only one or several matches.
 
 ## Installation
 
